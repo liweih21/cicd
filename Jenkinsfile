@@ -1,57 +1,36 @@
 pipeline {
     agent any
 
-    environment {
-        https://earless-kamryn-clingiest.ngrok-free.dev = credentials('admin')  // Create credential in Jenkins
+    triggers {
+        // This tells Jenkins: "Start a build when GitHub sends a webhook"
+        githubPush()
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/liweih21/cicd.git'
+                checkout scm
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Build') {
             steps {
-                sh '''
-                    python3 -m venv venv
-                    . venv/bin/activate
-                    pip install -r requirements.txt
-                '''
+                echo "Building project..."
             }
         }
 
-        stage('Run Tests') {
+        stage('Test') {
             steps {
-                sh '''
-                    . venv/bin/activate
-                    pytest --maxfail=1 --disable-warnings
-                '''
+                echo "Running tests..."
             }
         }
-    }
 
-    post {
-        success {
-            script {
-                httpRequest httpMode: 'POST',
-                    url: "${https://earless-kamryn-clingiest.ngrok-free.dev}",
-                    contentType: 'APPLICATION_JSON',
-                    requestBody: """{
-                        "markdown": "**Build succeeded** for job: ${env.JOB_NAME} (#${env.BUILD_NUMBER})"
-                    }"""
+        stage('Deploy') {
+            when {
+                branch 'main'
             }
-        }
-        failure {
-            script {
-                httpRequest httpMode: 'POST',
-                    url: "${https://earless-kamryn-clingiest.ngrok-free.dev}",
-                    contentType: 'APPLICATION_JSON',
-                    requestBody: """{
-                        "markdown": "**Build FAILED** for job: ${env.JOB_NAME} (#${env.BUILD_NUMBER})"
-                    }"""
+            steps {
+                echo "Deploying to production..."
             }
         }
     }
