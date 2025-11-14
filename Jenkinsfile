@@ -2,14 +2,14 @@ pipeline {
     agent any
 
     environment {
-        WEBEX_WEBHOOK_URL = credentials('webex-webhook')  // Create this credential in Jenkins
+        https://earless-kamryn-clingiest.ngrok-free.dev = credentials('webex-webhook')  // Create this credential in Jenkins
     }
 
     stages {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/<your-user>/<your-repo>.git'
+                    url: 'https://github.com/liweih21/cicd.git'
             }
         }
 
@@ -37,7 +37,7 @@ pipeline {
         success {
             script {
                 httpRequest httpMode: 'POST',
-                    url: "${WEBEX_WEBHOOK_URL}",
+                    url: "${https://earless-kamryn-clingiest.ngrok-free.dev}",
                     contentType: 'APPLICATION_JSON',
                     requestBody: """{
                         "markdown": "**Build succeeded** for job: ${env.JOB_NAME} (#${env.BUILD_NUMBER})"
@@ -47,7 +47,7 @@ pipeline {
         failure {
             script {
                 httpRequest httpMode: 'POST',
-                    url: "${WEBEX_WEBHOOK_URL}",
+                    url: "${https://earless-kamryn-clingiest.ngrok-free.dev}",
                     contentType: 'APPLICATION_JSON',
                     requestBody: """{
                         "markdown": "**Build FAILED** for job: ${env.JOB_NAME} (#${env.BUILD_NUMBER})"
