@@ -1,0 +1,38 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/liweih21/cicd/repo.git'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'python3 -m venv venv'
+                sh '. venv/bin/activate && pip install -r requirements.txt'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh '. venv/bin/activate && python -m unittest discover tests'
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                def status = currentBuild.currentResult
+                sh """
+                curl -X POST -H 'Authorization: Bearer N2U3YjUwNjctZjMyMy00OTMwLWE4NmMtOTQ5Yzg3NDY2MjNjZWY5MjRlNjItNzlm_P0A1_29bfee7a-764c-46a3-810a-8db47e4b026a' \
+                     -H 'Content-Type: application/json' \
+                     -d '{"roomId":"issloc","text":"Build ${status}: ${env.JOB_NAME} #${env.BUILD_NUMBER}"}' \
+                     https://webexapis.com/v1/messages
+                """
+            }
+        }
+    }
+}
