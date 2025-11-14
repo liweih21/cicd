@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        https://earless-kamryn-clingiest.ngrok-free.dev = credentials('webex-webhook')  // Create this credential in Jenkins
+        https://earless-kamryn-clingiest.ngrok-free.dev = credentials('admin')  // Create this credential in Jenkins
     }
 
     stages {
